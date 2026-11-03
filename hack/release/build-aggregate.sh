@@ -45,12 +45,9 @@
 #                       working-tree build reuse the images of a release.
 #   --component NAME    aggregate component name (default github.com/platform-mesh/search)
 #   --ocm-repo REPO     OCM repository to publish to and resolve references from
-#                       (default ghcr.io/platform-mesh)
+#                       (default ghcr.io/platform-mesh/contrib-search)
 #   --chart-repo REPO   OCI repository charts are pushed to, without oci://
-#                       (default <ocm-repo>/helm-charts, the namespace charts
-#                       have always been published to; images live under
-#                       <ocm-repo>/platform-mesh/, so the two never share a
-#                       repository)
+#                       (default <ocm-repo>/helm-charts)
 #   --repo-url URL      git repository URL recorded as source (default from origin)
 #   --commit SHA        git commit recorded as source (default HEAD)
 #   --signature NAME    sign every newly published component version with this
@@ -71,7 +68,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")/../.."
 VERSION=""
 IMAGE_VERSION=""
 COMPONENT="github.com/platform-mesh/search"
-OCM_REPO="ghcr.io/platform-mesh"
+OCM_REPO="ghcr.io/platform-mesh/contrib-search"
 CHART_REPO=""
 REPO_URL=""
 COMMIT=""
