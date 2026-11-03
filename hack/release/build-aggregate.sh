@@ -43,7 +43,7 @@
 #   --image-version V   version of the images built from this repository
 #                       (default: --version; their image tag is v<V>). Lets a
 #                       working-tree build reuse the images of a release.
-#   --component NAME    aggregate component name (default github.com/platform-mesh/search)
+#   --component NAME    aggregate component name (default github.com/platform-mesh/contrib-search)
 #   --ocm-repo REPO     OCM repository to publish to and resolve references from
 #                       (default ghcr.io/platform-mesh/contrib-search)
 #   --chart-repo REPO   OCI repository charts are pushed to, without oci://
@@ -67,7 +67,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")/../.."
 
 VERSION=""
 IMAGE_VERSION=""
-COMPONENT="github.com/platform-mesh/search"
+COMPONENT="github.com/platform-mesh/contrib-search"
 OCM_REPO="ghcr.io/platform-mesh/contrib-search"
 CHART_REPO=""
 REPO_URL=""
@@ -157,11 +157,11 @@ for chart_yaml in "$STAGED"/*/Chart.yaml; do
   image_component=""; image_version=""
   if [[ "$wants_image" == "true" ]]; then
     if grep -qx "$name" <<<"$inhouse_charts"; then
-      image_component="github.com/platform-mesh/images/$name"; image_version="$IMAGE_VERSION"
+      image_component="github.com/platform-mesh/contrib-search/images/$name"; image_version="$IMAGE_VERSION"
     elif [[ "$has_images" == "true" ]]; then
-      image_component="github.com/platform-mesh/images/$name"; image_version="$VERSION"
+      image_component="github.com/platform-mesh/contrib-search/images/$name"; image_version="$VERSION"
     elif [[ -n "$app_version" && "$app_version" != "0.0.0" ]]; then
-      image_component="github.com/platform-mesh/images/$name"; image_version="$app_version"
+      image_component="github.com/platform-mesh/contrib-search/images/$name"; image_version="$app_version"
     fi
   fi
 
@@ -197,18 +197,18 @@ while IFS= read -r chart; do
     '{name:"chart", type:"git", version:$v, access:{type:"gitHub", repoUrl:$url, commit:$commit}}')"
   provider='{name:"The Platform Mesh Team"}'
 
-  service="$(jq -n --arg name "github.com/platform-mesh/$name" --arg v "$version" --argjson src "$chart_source" \
+  service="$(jq -n --arg name "github.com/platform-mesh/contrib-search/$name" --arg v "$version" --argjson src "$chart_source" \
     "{name:\$name, version:\$v, provider:$provider, sources:[\$src]}")"
 
   if [[ "$(jq -r .flat <<<"$chart")" == "true" ]]; then
     # Chart resource directly in the service component, no helm-charts/ layer, no source.
     service="$(jq --argjson r "$chart_resource" '.resources = [$r] | del(.sources)' <<<"$service")"
   else
-    chart_component="$(jq -n --arg name "github.com/platform-mesh/helm-charts/$name" --arg v "$version" \
+    chart_component="$(jq -n --arg name "github.com/platform-mesh/contrib-search/helm-charts/$name" --arg v "$version" \
       --argjson r "$chart_resource" --argjson src "$chart_source" \
       "{name:\$name, version:\$v, provider:$provider, resources:[\$r], sources:[\$src]}")"
     generated="$(jq --argjson c "$chart_component" '.components += [$c]' <<<"$generated")"
-    service="$(jq --arg name "github.com/platform-mesh/helm-charts/$name" --arg v "$version" \
+    service="$(jq --arg name "github.com/platform-mesh/contrib-search/helm-charts/$name" --arg v "$version" \
       '.componentReferences = [{name:"chart", componentName:$name, version:$v}]' <<<"$service")"
   fi
 
@@ -296,8 +296,8 @@ if [[ ${#missing[@]} -gt 0 ]]; then
   for m in "${missing[@]}"; do
     echo "  - $m" >&2
     case "$m" in
-      github.com/platform-mesh/images/*)
-        c="${m#github.com/platform-mesh/images/}"; c="${c%%:*}"; v="${m##*:}"
+      github.com/platform-mesh/contrib-search/images/*)
+        c="${m#github.com/platform-mesh/contrib-search/images/}"; c="${c%%:*}"; v="${m##*:}"
         if grep -qx "$c" <<<"$inhouse_charts"; then
           echo "      -> built from this repository; the release workflow publishes it before the aggregate (--image-version $IMAGE_VERSION)" >&2
         else

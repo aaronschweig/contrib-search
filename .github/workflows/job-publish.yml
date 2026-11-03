@@ -21,10 +21,10 @@ name: publish
 #   1. images     every component image from ocm/components.yaml, tagged
 #                 v<version>, for linux/amd64 and linux/arm64, cosign-signed,
 #                 with SBOMs attested to the image and published as the OCM
-#                 component github.com/platform-mesh/images/<component>:<version>
+#                 component github.com/platform-mesh/contrib-search/images/<component>:<version>
 #   2. aggregate  hack/release/build-aggregate.sh: charts packaged at <version>,
 #                 their OCM components and the aggregate
-#                 github.com/platform-mesh/search:<version>, optionally OCM-signed
+#                 github.com/platform-mesh/contrib-search:<version>, optionally OCM-signed
 #   3. trivy      vulnerability scans of the images and SBOMs
 
 on:
@@ -165,7 +165,7 @@ jobs:
             echo "::error::OCM_SIGNING_PRIVATE_KEY / OCM_SIGNING_CERT secrets are not set"; exit 1
           fi
           hack/release/ocm-config.sh "$OCM_REPO" "$SIGNATURE" > "$HOME/.ocmconfig"
-      - name: Publish OCM component github.com/platform-mesh/images/${{ matrix.component }}
+      - name: Publish OCM component github.com/platform-mesh/contrib-search/images/${{ matrix.component }}
         env:
           COMPONENT: ${{ matrix.component }}
           IMAGE_REF: ${{ steps.build.outputs.imageRef }}
@@ -263,5 +263,5 @@ jobs:
       packages: read
       security-events: write
     with:
-      componentName: github.com/platform-mesh/images/${{ matrix.component }}
+      componentName: github.com/platform-mesh/contrib-search/images/${{ matrix.component }}
       componentVersion: ${{ inputs.version }}

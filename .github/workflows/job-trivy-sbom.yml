@@ -49,7 +49,7 @@ env:
   REGISTRY_TOKEN: ${{ secrets.registryToken || secrets.GITHUB_TOKEN }}
   # OCM repository used by job-publish.yml.
   IMAGE_REPO: ${{ format('ghcr.io/{0}/contrib-search', github.repository_owner) }}
-  COMPONENT: ${{ inputs.componentName || format('github.com/platform-mesh/images/{0}', github.event.repository.name) }}
+  COMPONENT: ${{ inputs.componentName || format('github.com/platform-mesh/contrib-search/images/{0}', github.event.repository.name) }}
 
 jobs:
   scan-sbom:
